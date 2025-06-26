@@ -1,0 +1,38 @@
+{
+  "name": "flowtip",
+  "version": "1.0.0",
+  "description": "FlowTip: The Dynamic SDK Feature Showcase for Gasless USDC Micro-Tipping",
+  "main": "index.js",
+  "scripts": {
+    "anchor:build": "cd flowtip-program && anchor build",
+    "anchor:test": "cd flowtip-program && anchor test",
+    "anchor:deploy": "cd flowtip-program && anchor deploy",
+    "relayer:dev": "cd relayer && npm run dev",
+    "relayer:build": "cd relayer && npm run build",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "dev": "concurrently \"npm run relayer:dev\" \"npm run frontend:dev\"",
+    "build": "npm run anchor:build && npm run relayer:build && npm run frontend:build"
+  },
+  "keywords": [
+    "solana",
+    "dynamic",
+    "sdk",
+    "gasless",
+    "usdc",
+    "tipping"
+  ],
+  "author": "FlowTip Team",
+  "license": "MIT",
+  "workspaces": [
+    "flowtip-program",
+    "relayer",
+    "frontend"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "dependencies": {
+    "@coinbase/cbpay-js": "^2.4.0"
+  }
+}

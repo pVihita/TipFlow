@@ -1,0 +1,27 @@
+{
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    },
+    {
+      "src": "relayer/pages/api/**/*.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/relayer/pages/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "env": {
+    "CDP_SECRET": "FSZTY3OsUzaN/jZv0HvaGWvrqVvU6Umbl4UcavDlP9GvIQk0K1ttq5E6gPcCfSR7ihS84UFxOnv5bYzOBz4A/g==",
+    "CDP_PROJECT_ID": "1e06c9a9-81d7-4a9b-872d-02e19a371aac"
+  }
+} 

@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own user document
+    match /users/{userId} {
+      allow read, write: if true; // For development - allows all access
+    }
+    
+    // Tips collection - allow reading all, writing for authenticated users
+    match /tips/{tipId} {
+      allow read: if true;
+      allow write: if true; // For development
+    }
+    
+    // Platform stats - allow reading for all users
+    match /stats/{document} {
+      allow read: if true;
+      allow write: if true; // For development
+    }
+    
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 
