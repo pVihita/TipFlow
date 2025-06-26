@@ -1,10 +1,11 @@
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
 import { SolanaWalletConnectors } from '@dynamic-labs/solana';
 
-const dynamicEnvironmentId = import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID || 'PLACEHOLDER_ENV_ID';
+const dynamicEnvironmentId = import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID;
 
-if (!import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID) {
-  console.warn('⚠️ VITE_DYNAMIC_ENVIRONMENT_ID is not set in environment variables, using placeholder');
+if (!dynamicEnvironmentId) {
+  console.error('❌ VITE_DYNAMIC_ENVIRONMENT_ID is required but not set in environment variables');
+  throw new Error('Dynamic Environment ID is required for the application to function');
 }
 
 export const DynamicProvider = ({ children }: { children: React.ReactNode }) => {
