@@ -11,11 +11,21 @@ if (!dynamicEnvironmentId) {
 export const DynamicProvider = ({ children }: { children: React.ReactNode }) => {
   // Get the current origin for CORS configuration
   const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+  const isWebContainer = currentOrigin.includes('webcontainer-api.io');
   
   console.log('🔧 Dynamic Provider Configuration:');
   console.log('- Environment ID:', dynamicEnvironmentId);
   console.log('- Current Origin:', currentOrigin);
-  console.log('- WebContainer detected:', currentOrigin.includes('webcontainer-api.io'));
+  console.log('- WebContainer detected:', isWebContainer);
+  
+  if (isWebContainer) {
+    console.log('🚨 WEBCONTAINER CORS SETUP REQUIRED:');
+    console.log('📝 Add this domain to Dynamic project settings:');
+    console.log(`   ${currentOrigin}`);
+    console.log('🔗 Go to: https://app.dynamic.xyz/dashboard/developer');
+    console.log('⚙️  Navigate to: Settings → Domains → Add Domain');
+    console.log('✅ Add the domain above to fix CORS errors');
+  }
 
   return (
     <DynamicContextProvider
@@ -29,15 +39,6 @@ export const DynamicProvider = ({ children }: { children: React.ReactNode }) => 
           evmNetworks: [], // Disable EVM completely
         },
         
-        // WebContainer specific configuration
-        ...(currentOrigin.includes('webcontainer-api.io') && {
-          // Add WebContainer-specific settings to handle CORS
-          apiBaseUrl: 'https://app.dynamicauth.com',
-          corsMode: 'cors',
-          // Allow credentials for cross-origin requests
-          credentials: 'include',
-        }),
-        
         // Reduce bundle size and potential conflicts
         walletConnectorExtensions: [],
         
@@ -47,9 +48,50 @@ export const DynamicProvider = ({ children }: { children: React.ReactNode }) => 
           
           // Specific handling for CORS errors
           if (error?.message?.includes('CORS') || error?.message?.includes('Failed to fetch')) {
-            console.error('🚨 CORS Error detected - WebContainer domain may need to be whitelisted');
-            console.error('📝 Current domain:', currentOrigin);
-            console.error('💡 This domain needs to be added to Dynamic project settings');
+            console.error('🚨 CORS Error detected!');
+            console.error('📝 Current domain that needs whitelisting:', currentOrigin);
+            console.error('🔗 Add this domain to Dynamic project settings:');
+            console.error('   https://app.dynamic.xyz/dashboard/developer');
+            console.error('⚙️  Settings → Domains → Add Domain');
+            console.error(`✅ Add: ${currentOrigin}`);
+            
+            // Show user-friendly error
+            if (typeof window !== 'undefined') {
+              const errorDiv = document.createElement('div');
+              errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #fee2e2;
+                border: 2px solid #fca5a5;
+                color: #991b1b;
+                padding: 16px;
+                border-radius: 8px;
+                max-width: 400px;
+                z-index: 10000;
+                font-family: monospace;
+                font-size: 12px;
+                line-height: 1.4;
+              `;
+              errorDiv.innerHTML = `
+                <strong>🚨 CORS Error - Domain Not Whitelisted</strong><br><br>
+                <strong>Current domain:</strong><br>
+                <code>${currentOrigin}</code><br><br>
+                <strong>Action needed:</strong><br>
+                1. Go to Dynamic Dashboard<br>
+                2. Settings → Domains<br>
+                3. Add the domain above<br><br>
+                <button onclick="this.parentElement.remove()" style="background: #991b1b; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Close</button>
+              `;
+              document.body.appendChild(errorDiv);
+              
+              // Auto-remove after 30 seconds
+              setTimeout(() => {
+                if (errorDiv.parentElement) {
+                  errorDiv.remove();
+                }
+              }, 30000);
+            }
           }
           
           // Don't crash the app on Dynamic errors
@@ -58,13 +100,6 @@ export const DynamicProvider = ({ children }: { children: React.ReactNode }) => 
 
         // Debug mode for development
         debugMode: process.env.NODE_ENV === 'development',
-        
-        // Additional WebContainer compatibility settings
-        ...(currentOrigin.includes('webcontainer-api.io') && {
-          // Disable features that might cause CORS issues in WebContainer
-          enableVisitTrackingOnConnectOnly: false,
-          enableAccountAbstraction: false,
-        }),
       }}
     >
       {children}
