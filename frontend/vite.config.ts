@@ -23,7 +23,16 @@ export default defineConfig({
       '.ngrok.io',
       '.ngrok-free.app',
       '.netlify.app',
-      '.vercel.app'
-    ]
+      '.vercel.app',
+      '.webcontainer-api.io', // Add WebContainer domains
+      '.local-credentialless.webcontainer-api.io'
+    ],
+    // Add CORS headers for WebContainer compatibility
+    cors: {
+      origin: true,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    }
   }
 })
